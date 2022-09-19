@@ -6,7 +6,7 @@ library(dplyr)
 
 
 # Load dataframe
-df = read.csv("Donnees_phenocam\\Dates_phenocam.csv")
+df = read.csv("phenocam\\Dates_phenocam.csv")
 
 #set columns as dates 
 df$Couleurs = as.Date(df$Couleurs)
