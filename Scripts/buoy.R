@@ -11,4 +11,4 @@ df = list.files(path = "Data//Raw//boue//Croche2016-2021", pattern = "*.csv", fu
 as.data.frame(df)
 
 write.csv(df, "Data//Processed//boue//boue_merged.csv", row.names = TRUE)
-?as.POSIXct # 
+?as.POSIXct() #manipulate data with calendar dates and time 
