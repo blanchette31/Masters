@@ -16,13 +16,14 @@ df$doycol = as.numeric(strftime(df$Couleurs, "%j"))
 df$doycol
 
 df$doyper = as.numeric(strftime(df$Perte, "%j"))
+df$year = df %>%
+  rename(year =ï..year )
 df$year = as.factor(df$year)
 
-write.csv(df, "Data//Processed//phenocam//Dates_phenocam.csv", row.names = T)
+write.csv(df, "Data//Processed//phenocam//dates_phenocam.csv", row.names = T)
 
 df_pheno = read.csv("Data//Processed//phenocam//Dates_phenocam.csv")
-df_pheno = df_pheno %>%
-  rename(year =ï..year )
+
 
 #Enlever 2012
 df_pheno <- df_pheno %>%

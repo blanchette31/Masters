@@ -1,11 +1,27 @@
 # Packages
 library(dplyr)
+library(tidyverse)
 
 # Data frames
 
 debit = read.csv("Data//Processed//debit//debit_merged.csv", header = T, sep = ",")
 
 precip = read.csv("Data//Processed//precip//precip_sth_merged.csv", header = T, sep = ",")
+
+pheno = read.csv("Data//Processed//phenocam//dates_phenocam.csv", header = T)
+
+
+#fix year column for pheno 
+pheno  = pheno %>%
+  rename(year =ï..year )
+
+
+#determine study period
+
+pheno = pheno %>%
+  mutate(doy_bef = doycol - 14) %>%
+  mutate(doy_aft = doyper + 14) 
+
 
 #year as factor 
 
