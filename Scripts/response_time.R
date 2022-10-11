@@ -1,7 +1,6 @@
 # Packages
 library(dplyr)
 library(tidyverse)
-library(ggplot2)
 
 # Data frames
 
@@ -16,36 +15,19 @@ pheno = read.csv("Data//Processed//phenocam//dates_phenocam.csv", header = T)
 pheno  = pheno %>%
   rename(year =ï..year )
 
-debit$date = as.Date(debit$date, format, tryFormats = c("%Y-%m-%d"))
 
-
-precip = precip %>%
-  rename(year = Year)
-
-
-#determine doy_bef and doy_aft 
+#determine study period
 
 pheno = pheno %>%
   mutate(doy_bef = doycol - 14) %>%
   mutate(doy_aft = doyper + 14) 
 
+
 #year as factor 
 
 debit$year = as.factor(debit$year)
 
-precip$year = as.factor(precip$year)
-
-
-
-debit_year = split(debit, debit$year)
-
-debit_sel = for(i in list(debit_year)){
-  
-}
-
-debit_sel = for(i in levels(pheno$year)){
-    debit[debit$doy >= pheno[pheno$year == i],pheno$doy_bef]
-  }
+precip$Year = as.factor(precip$Year)
 
 #split dataframes by year
 debit_split = split(debit, debit$year)
@@ -65,73 +47,3 @@ for(i in levels(debit$year)) {
        type = "l",
        ylab ="")
 }
-
-
-#select data in function of doy_bef and doy_aft
-
-debit_bef = debit %>% 
-  rowwise() %>% 
-  mutate(present = any(doy >= pheno$doy_bef)) %>% 
-  filter(present) %>% 
-  data.frame()
-
-debit_sel = debit_bef %>%
-  rowwise() %>%
-  mutate (present = any(doy <=pheno$doy_aft)) %>%
-  filter(present) %>%
-  data.frame()
-
-par(mfrow = c(3, 4))
-
-for(i in levels(debit_sel$year)) {
-  plot(debit_sel[debit_sel$year == i, "debit_total_m3_jour"],
-       col = "gray50",
-       main = paste(i),
-       type = "l",
-       ylab ="")
-}
-
-# ajout des précipitations 
-par(new = TRUE)
-
-precip_bef = precip %>% 
-  rowwise() %>%
-  mutate(present = any(doy >= pheno$doy_bef)) %>%
-  filter(present) %>%
-  data.frame()
-  
-precip_sel = precip_bef %>%
-  rowwise() %>%
-  mutate(present = any(doy >= pheno$doy_aft)) %>%
-  filter(present) %>%
-  data.frame()
-
-for(i in levels(precip_sel$year)){
-  hist(precip_sel[precip_sel$year == i, "Total.Precip..mm."],
-       main = paste(i),
-       col = "gray80",
-       ylab = "pluie totale (mm)",
-       xlab = "doy")
-}
-
-par(mfrow= c(3,4))
-
-for(i in levels(precip_sel$year)){
-  plot(x = debit_sel$doy, y = debit_sel$year,
-       type = "l", col = "red")
-  par(new= TRUE)
-  segments(x0 = precip$sel)
-  
-}
-debit_omit = na.omit(debit)
-plot(x = debit_omit$date, y = debit_omit$debit_total_m3_jour,
-     type = "l", col = "red")
-par(new= TRUE)
-segments(x0 = precip$sel)
-
-
-
-
-#precipitations ggplot 
-ggplot(precip, aes(date, Total.Rain..mm.))+
-  geom_bar(stat = 'identity', fill = "blue")+ facet_wrap(precip$year)
