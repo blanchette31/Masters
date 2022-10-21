@@ -123,15 +123,27 @@ for(i in levels(precip_sel$year)){
   segments(x0 = precip$sel)
   
 }
-debit_omit = na.omit(debit)
-plot(x = debit_omit$date, y = debit_omit$debit_total_m3_jour,
-     type = "l", col = "red")
+debit_omit = na.omit(debit_sel)
+debit_omit$date = as.Date(debit_omit$date, "%Y-%m-%d")
 par(new= TRUE)
-segments(x0 = precip$sel)
 
 
+plot(x = debit_omit$date, y = debit_omit$debit_total_m3_jour,
+     type = "l", col = "red", axes = FALSE,
+     ylim = c(0, 1.3 * max(debit_omit),
+              xaxs = "i", yaxs = "i"))
+precip$date = as.Date(precip$date, "%Y-%m-%d")
+segments(x0 = precip$date, y0 = rep(0, nrow(precip)),
+         x1 = precip$date, y1 = precip$Total.Rain..mm., lend = 2, lwd = 1)
+
+maxPR   <- max(precip$Total.Rain..mm. , na.rm = T)
+
+yrAxis  <- seq(0, ceiling(maxPR), length.out = 5)
+axis(4, at = yrAxis, labels = paste0(yrAxis))
+#       mtext(y = yrAxis, par(usr)[1], labels = yrAxis)
+mtext("Precip.", side = 4, line = 2, adj = 1)
 
 
 #precipitations ggplot 
-ggplot(precip, aes(date, Total.Rain..mm.))+
-  geom_bar(stat = 'identity', fill = "blue")+ facet_wrap(precip$year)
+ggplot(precip_bef, aes(date, Total.Rain..mm.))+
+  geom_bar(stat = 'identity', fill = "blue")+ facet_wrap(precip_bef$year)
