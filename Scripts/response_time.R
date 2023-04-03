@@ -16,27 +16,27 @@ pheno = read.csv("Data//Processed//phenocam//dates_phenocam.csv", header = T)
 pheno  = pheno %>%
   rename(year =ï..year )
 
+
+#debit$date as date
 debit$date = as.Date(debit$date, format, tryFormats = c("%Y-%m-%d"))
 
-
+#rename precip year
 precip = precip %>%
   rename(year = Year)
 
 
-#determine doy_bef and doy_aft 
-
+#determine study period days of year
 pheno = pheno %>%
   mutate(doy_bef = doycol - 14) %>%
   mutate(doy_aft = doyper + 14) 
 
 #year as factor 
-
 debit$year = as.factor(debit$year)
 
 precip$year = as.factor(precip$year)
 
 
-
+#split debit df by year
 debit_year = split(debit, debit$year)
 
 debit_sel = for(i in list(debit_year)){
@@ -48,13 +48,12 @@ debit_sel = for(i in levels(pheno$year)){
   }
 
 #split dataframes by year
-debit_split = split(debit, debit$year)
 
 precip_split = split(precip, precip$Year)
 
 plot(debit$doy, debit$debit_total_m3_jour)
 
-#discharge by year
+#discharge by year (all seasons)
 
 par(mfrow = c(3, 4))
 
@@ -80,6 +79,12 @@ debit_sel = debit_bef %>%
   mutate (present = any(doy <=pheno$doy_aft)) %>%
   filter(present) %>%
   data.frame()
+
+
+# debit by year for study period (ne fonctionne pas comme il faut pour l'instant.)
+# prend actuellement le doy du début de changement de couleur le plus tôt et la fin de la perte le plus tard 
+# et l'applique pour tous les années au lieu de faire la selection par année. 
+#probablement un for loop à faire pour une liste de dataframes par année 
 
 par(mfrow = c(3, 4))
 
@@ -123,11 +128,11 @@ for(i in levels(precip_sel$year)){
   segments(x0 = precip$sel)
   
 }
-debit_omit = na.omit(debit_sel)
+debit_omit = na.omit(debit_bef)
 debit_omit$date = as.Date(debit_omit$date, "%Y-%m-%d")
 par(new= TRUE)
 
-
+par( new = TRUE)
 plot(x = debit_omit$date, y = debit_omit$debit_total_m3_jour,
      type = "l", col = "red", axes = FALSE,
      ylim = c(0, 1.3 * max(debit_omit),
@@ -147,3 +152,7 @@ mtext("Precip.", side = 4, line = 2, adj = 1)
 #precipitations ggplot 
 ggplot(precip_bef, aes(date, Total.Rain..mm.))+
   geom_bar(stat = 'identity', fill = "blue")+ facet_wrap(precip_bef$year)
+
+
+
+
