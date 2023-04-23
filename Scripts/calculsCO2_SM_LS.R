@@ -57,5 +57,5 @@ delta_ls$date <- delta_ls$Date
 delta <- delta[, !names(delta) %in% c("code")]
 
 
-delta_merged <- merge(delta, delta_ls, by= c("date, conc.CO2.insitu, conc.CO2.atm") all = TRUE)
-  
+delta_merged <- merge(delta, delta_ls, by= c("date", "conc.CO2.insitu", "conc.CO2.atm", "delta.CO2"), all = TRUE)
+write.csv(delta_merged, "Data/Processed/lake/delta_co2_LS_SM_merged.csv")  
