@@ -37,9 +37,13 @@ df2020 = as.data.frame(df2020)
 df2021 = read_delim("Data//Raw//debit//debit_journalier_2021.csv")
 df2021 = as.data.frame(df2021)
 
+df_2022 <- read.csv("Data//Processed//debit//debit_journalier_2022.csv")
+
 df_debit = rbind(df2012, df2014, df2015, df2016, df2017, df2018, df2019,df2020, df2021)
 
 df_debit$date = as.Date(df_debit$date)
+
+
 
 # ne fonctionne pas en raison de la separation " " 
 df_debit = read.csv("Data//Raw//debit//formatted", sep = '\t') 
@@ -74,3 +78,23 @@ df_debit$month = as.factor(df_debit$month)
 #export dataframe
 
 write.csv(df_debit, "Data//Processed//debit//debit_merged.csv", row.names = TRUE)
+
+
+
+df_debit <- read.csv("Data//Processed//debit//debit_merged.csv")
+
+df_merger <- df_debit %>% 
+  select(date, debit_total_m3_jour, year, doy)
+
+df_2022 <- df_2022 %>% 
+  rename(
+     debit_total_m3_jour = daily_discharge
+  ) %>% 
+  select(date, debit_total_m3_jour, year, doy)
+
+
+
+debit_all <- rbind(df_merger, df_2022)
+
+write.csv(debit_all, "Data//Processed//debit//debit_2011-2022.csv", row.names = TRUE)
+

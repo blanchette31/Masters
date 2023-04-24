@@ -70,14 +70,24 @@ ggplot(df_daily, aes(x = doy, y = o2))+
   theme_bw()
 ggsave("Data/export/daily_delta_co2_o2.png", width = 7, height = 5, units = "in")
 
+
+# ,
+# co2_se = ((sd(delta.CO2))/(sqrt(cur_group_rows())))*1.96,
+# o2_se = ((sd(do_deviation))/(sqrt(cur_group_rows())))*1.96
+
 df = na.omit(df)
 df_doy = df %>%
   group_by(doy) %>%
   summarise(co2 = mean(delta.CO2),
             o2 = mean(do_deviation),
             co2_sd = sd(delta.CO2),
-            o2_sd = sd(do_deviation))
-
+            o2_sd = sd(do_deviation),
+            co2_se = sd(delta.CO2) / sqrt(n()),
+            o2_se = sd(do_deviation) / sqrt(n())
+            )
+df_doy <- df_doy %>% 
+  mutate(co2_ci = co2_se*1.96,
+         o2_ci = o2_se*1.96)
 
 ggplot(df_doy, aes(x = as.numeric(doy), y = co2))+
   geom_rect(aes(xmin = 254, xmax = 270, ymin = -Inf, ymax = Inf), alpha = 0.01, fill = "#FFC107")+
@@ -88,8 +98,8 @@ ggplot(df_doy, aes(x = as.numeric(doy), y = co2))+
   geom_ribbon(aes(ymin = o2 - o2_sd, ymax = o2 + o2_sd), fill = "#757575", alpha = 0.5)+
   geom_text(aes(x = 240, y = 50), label = expression(paste(Delta*CO[2])), size = 7)+
   geom_text(aes(x = 240, y = -75), label = expression(paste(Delta*O[2])), size = 7)+
-  #geom_text(aes(x= 262, y = 85), label = "Range of start of \n leaf colour change")+
-  #geom_text(aes(x = 302, y = 85), label = "Range of end \n of leaf fall")+
+  geom_text(aes(x= 262, y = 85), label = "Range of start of \n leaf colour change")+
+  geom_text(aes(x = 302, y = 85), label = "Range of end \n of leaf fall")+
   scale_y_continuous(limits = c(-125, 100))+
   scale_x_continuous(limits = c(230, 315),
                      expand = c(0,0),
@@ -104,3 +114,12 @@ ggplot(df_doy, aes(x = as.numeric(doy), y = co2))+
         axis.title = element_text(size = 14),
         axis.text = element_text(size = 12))
 ggsave("Presentations/GRIL-SCAS/figures/co2_o2_compare.png", dpi = 600, bg = "transparent", width = 7, height = 5 )
+
+
+slope <- subset(df_doy, doy >= 270)
+slope <- subset(df_doy, doy <= 304)
+
+slope_co2 <- lm(co2 ~ doy, data = slope)
+slope_o2 <- lm(o2 ~ doy, data = slope)
+summary(slope_co2)
+summary(slope_o2)

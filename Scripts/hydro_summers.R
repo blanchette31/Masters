@@ -9,7 +9,7 @@ library(ggridges)
 #Check example: https://rpubs.com/cxiao/hydrograph-ggplot2-plot
 
 #Open data
-q <- read.csv("Data/Processed/debit/debit_merged.csv")
+q <- read.csv("Data/Processed/debit/debit_2011-2022.csv")
 q$date <- as.Date(q$date)
 pheno <- read.csv("Data/Raw/phenocam/Dates_phenocam_V2.csv")
 pheno$Couleurs <- as.Date(pheno$Couleurs)
@@ -17,11 +17,11 @@ pheno$Perte <- as.Date(pheno$Perte)
 pheno[pheno$year == 2012,'Couleurs'] <- '2012-10-03' #pick date in between Sept 26 and Oct 10
 pheno$doy_start <- as.numeric(strftime(pheno$Couleurs, '%j'))
 pheno$doy_end <- as.numeric(strftime(pheno$Perte, '%j'))
-nasad = read.csv("Data/Processed/precip/precip_nasa_bound.csv")
+nasad = read.csv("Data/Processed/precip/precip_2011-2023.csv")
 
 # Create one data frame for discharge and rain 
 
-df = merge(nasad[,c("doy","year","rain_nasa")],
+df = merge(nasad[,c("doy","year","rain")],
                 q[,c('date','year','doy','debit_total_m3_jour')], 
                 by = c("year", "doy"))
 df = df[order(as.Date(df$date, format="%Y-%m-%d")),]
@@ -60,7 +60,7 @@ pdf('Data/export/hydrographs_all_years_summer_nasa.pdf', width = 8, height = 10)
 
 #Change margin to display text on the right (default is c(5, 4, 4, 2))
 #And open panels to plot graphics
-par(mfrow = c(5,2), mar = c(2, 4.5, 2, 4))
+par(mfrow = c(6,2), mar = c(2, 4.5, 2, 4))
 
 
 #Loop to display all years
@@ -114,7 +114,7 @@ pdf('Data/export/hydrographs_all_years_summer_nasa_fixed_test.pdf', width = 8, h
 
 #Change margin to display text on the right (default is c(5, 4, 4, 2))
 #And open panels to plot graphics
-par(mfrow = c(5,2), mar = c(2, 4.5, 2, 4))
+par(mfrow = c(6,2), mar = c(2, 4.5, 2, 4))
 
 
 #Loop to display all years

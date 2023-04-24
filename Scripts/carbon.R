@@ -9,10 +9,14 @@ library(khroma)
 library(lubridate)
 
 #load dataframe
-df = list.files(path = "Data//Raw//boue//Croche2016-2021", pattern = "*.csv", full.names = TRUE) %>% 
+df <- list.files(path = "Data//Raw//boue//Croche2016-2021", pattern = "*.csv", full.names = TRUE) %>% 
   lapply(read_csv) %>%
   bind_rows
+df_2022 <- read.csv("Data//Raw//boue//2022CR6_QAQC3.csv", header = TRUE)
 
+df_2022$timestamp <- as.POSIXct(df_2022$timestamp, format = "%Y-%m-%d%H:%M:%S", tz = "America/New_York")
+
+df_cmb <- bind_rows(df, df_2022)
 
 
 #Set timestamp to correct format (still not appearing in EST though)

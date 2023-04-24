@@ -12,7 +12,7 @@ library(ggridges)
 #Open data
 sth <- read.csv("Data/Processed/precip/precip_brief.csv")
 sth$date <- as.Date(sth$date)
-q <- read.csv("Data/Processed/debit/debit_merged.csv")
+q <- read.csv("Data/Processed/debit/debit_2011-2022.csv")
 q$date <- as.Date(q$date)
 pheno <- read.csv("Data/Raw/phenocam/Dates_phenocam_V2.csv")
 pheno$Couleurs <- as.Date(pheno$Couleurs)
@@ -20,7 +20,7 @@ pheno$Perte <- as.Date(pheno$Perte)
 pheno[pheno$year == 2012,'Couleurs'] <- '2012-10-03' #pick date in between Sept 26 and Oct 10
 pheno$doy_start <- as.numeric(strftime(pheno$Couleurs, '%j'))
 pheno$doy_end <- as.numeric(strftime(pheno$Perte, '%j'))
-nasad = read.csv("Data/Processed/precip/precip_nasa_bound.csv")
+nasad = read.csv("Data/Processed/precip/precip_2011-2023.csv")
 
 
 #Create one data frame for discharge and precipitation data
@@ -31,7 +31,7 @@ df <- merge(sth[,c('date','Total.Rain..mm.')],
 df <- df[,c(1,3,4,2,5)]
 colnames(df)[c(4,5)] <- c('rain','q')
 
-df_nasa = merge(nasad[,c("doy","year","rain_nasa")],
+df_nasa = merge(nasad[,c("doy","year","rain")],
                 q[,c('date','year','doy','debit_total_m3_jour')], 
                 by = c("year", "doy"))
 df_nasa = df_nasa[order(as.Date(df_nasa$date, format="%Y-%m-%d")),]
@@ -69,7 +69,7 @@ month_label <- c('Sep','Oct','Nov')
 week_tick <- as.numeric(strftime(c('2011-08-18','2011-08-25','2011-09-08', '2011-09-15','2011-09-22','2011-10-08','2011-10-15', '2011-10-22','2011-11-08','2011-11-15'), '%j'))
 
 #Export graphic to pdf
-png('Data/export/hydrographs_all_years.png', height = 10)
+pdf('Data/export/hydrographs_all_years.pdf', height = 10)
 
 #Change margin to display text on the right (default is c(5, 4, 4, 2))
 #And open panels to plot graphics
@@ -126,11 +126,11 @@ par(mfrow = c(1,1), mar = c(5, 4, 4, 2))
 
 
 #Export graphic to pdf
-png('Data/export/hydrographs_all_years_nasa.png')
+pdf('Data/export/hydrographs_all_years_nasa.pdf')
 
 #Change margin to display text on the right (default is c(5, 4, 4, 2))
 #And open panels to plot graphics
-par(mfrow = c(5,2), mar = c(2, 4.5, 2, 4))
+par(mfrow = c(6,2), mar = c(2, 4.5, 2, 4))
 
 #Loop to display all years
 
@@ -181,11 +181,11 @@ par(mfrow = c(1,1), mar = c(5, 4, 4, 2))
 
 
 #Export graphic to pdf
-png('Data/export/hydrographs_all_years_nasa_fixed.png', height = 10)
+pdf('Data/export/hydrographs_all_years_nasa_fixed.pdf', height = 10)
 
 #Change margin to display text on the right (default is c(5, 4, 4, 2))
 #And open panels to plot graphics
-par(mfrow = c(5,2), mar = c(2, 4.5, 2, 4))
+par(mfrow = c(6,2), mar = c(2, 4.5, 2, 4))
 
 #Loop to display all years
 

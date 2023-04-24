@@ -9,7 +9,7 @@ library(ggpubr)
 
 
 # Load dataframe
-df = read.csv("Data//Processed//phenocam//dates_phenocam.csv")
+df = read.csv("Data//Processed//phenocam//pheno_clean.csv")
 
 #set columns as dates 
 df$Couleurs = as.Date(df$Couleurs)
@@ -27,6 +27,11 @@ df <- df %>%
 
 #Enlever 2011 
 df = subset(df, year != "2011")
+df = subset(df, year != "2012")
+df = subset(df, year != "2013")
+df = subset(df, year != "2014")
+df = subset(df, year != "2020")
+
 
 #Ordre dans lequel les années apparaissent sur le graphique
 levels(df$year)
@@ -41,7 +46,7 @@ p1 <- ggplot(df, aes(y= year)) +
   geom_point(aes(x=doycol),size=3,color="#FFC107")+
   geom_point(aes(x=doyper),size=3,color="#FFC107")+
   theme_classic()+ 
-  labs(x = "Period of leaf fall (days)", y = "") +
+  labs(x = "Period of leaf fall", y = "") +
   scale_x_continuous(limits = c(240,340), breaks = c(244, 274, 305, 335), 
                      labels = c("Sep","Oct","Nov","Dec"))+
   theme(plot.background = element_rect(fill = "transparent", colour = NA),
@@ -69,7 +74,7 @@ p2 <- ggplot(df, aes(x=year, y = temps_perte)) +
  
 p3 = ggarrange(p1, p2, ncol = 2, nrow =1)
 p3
-ggsave("Presentations/GRIL-SCAS/figures/leaf_fall_poster.png", plot = p3, bg = "transparent", dpi = 600, height = 5, width = 7)
+ggsave("Data//Figures//leaf_fall_period.png", plot = p3, bg = "transparent", dpi = 600, height = 5, width = 7)
 
 #Distribution de la date de début de couleur et perte de feuille
 df_long <- df[,c("year","doycol","doyper")] %>% 

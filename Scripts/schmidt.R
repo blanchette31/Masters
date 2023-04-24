@@ -6,13 +6,23 @@ library(rLakeAnalyzer)
 library(lubridate)
 
 
-bathy <- load.bathy("Data/Processed/lake/bathy_area.csv")
+bathy <- load.bathy("Data/Processed/lake/bathy_test.csv")
 
 wtr <-  read.csv("Data/Processed/lake/wtr_temp_for_schmidt.csv")
+
 wtr$datetime <- as.POSIXct(wtr$datetime, format = "%Y-%m-%d %H:%M:%S")
+avg_0.5_wtr <- c("wtr_0.5", "wtr_00.5")
+wtr$wtr_0.5 <- rowMeans(wtr[, avg_0.5_wtr, drop = FALSE])
 wtr$wtr_00.5 <- NULL
 
+wtr_2022 <- read.csv("Data/Processed/lake/wtr_temp_for_schmidt_2022.csv")
+wtr_2022$datetime <- as.POSIXct(wtr_2022$datetime, format = "%Y-%m-%d %H:%M:%S")
+avg_0.65_wtr <- c("wtr_0.65", "wtr_00.65")
+wtr$wtr_0.65 <- rowMeans(wtr_2022[, avg_0.65_wtr, drop = FALSE])
+wtr$wtr_00.65 <- NULL
 
+wtr_2015 <- read.csv("Data/Processed/lake/wtr_temp_for_schmidt_2015.csv")
+wtr_2015$datetime <- as.POSIXct(wtr_2015$datetime, format = "%Y-%m-%d %H:%M:%S")
 
 wtr_2021 <- subset(wtr, year(datetime) == 2021)
 wtr_2019 <- subset(wtr, year(datetime) == 2019)
@@ -26,8 +36,24 @@ schmidt <- schmidt %>%
     date = strftime(datetime, format = "%Y-%m-%d"),
     doy = strftime(datetime, format = "%j"),
     year = strftime(datetime, format = "%Y"))
-write.csv(schmidt, "Data/Processed/lake/schmidt.csv")
 
+
+schmidt_2022 <- ts.schmidt.stability(wtr_2022, bathy, na.rm = TRUE)
+schmidt_2022 <- schmidt_2022 %>%
+  mutate(
+    date = strftime(datetime, format = "%Y-%m-%d"),
+    doy = strftime(datetime, format = "%j"),
+    year = strftime(datetime, format = "%Y"))
+schmidt_2015 <- ts.schmidt.stability(wtr_2015, bathy, na.rm = TRUE)
+schmidt_2015 <- schmidt_2015 %>%
+  mutate(
+    date = strftime(datetime, format = "%Y-%m-%d"),
+    doy = strftime(datetime, format = "%j"),
+    year = strftime(datetime, format = "%Y"))
+
+schmidt_combined <- rbind(schmidt_2015, schmidt, schmidt_2022)
+
+write.csv(schmidt_combined, "Data/Processed/lake/schmidt.csv")
 #schmidt stability plot 
 
 schmidt_2021 <- subset(schmidt, year(datetime) == 2021)
@@ -66,6 +92,9 @@ p6 = ggplot(schmidt, aes(x = datetime, y = schmidt.stability))+
   labs(x = "", y = "Schmidt stability")
 ggsave("Data/export/schmidt_all_years.png", p6)
 
+  
+
+
 #thermo depth 
 thermo_depth <- ts.thermo.depth(wtr, Smin = 0.1, na.rm = TRUE)
 write.csv(thermo_depth, "Data/Processed/lake/thermo_depth.csv")
@@ -80,7 +109,7 @@ wtr_layers <-  wtr.heatmap.layers(wtr)
 dev.off()
 
 mean <- schmidt %>% 
- group_by(date, doy) %>% 
+ group_by(date, doy, year) %>% 
   summarise(mean = mean(schmidt.stability))
 
 png("Data/export/therm_2021.png", width = 12, height = 7, units = "in", res = 300)
@@ -102,3 +131,21 @@ dev.off()
 png("Data/export/therm_2016.png", width = 12, height = 7, units = "in", res = 300)
 therm_2016 <- wtr.plot.temp(wtr_2016)
 dev.off()
+
+
+
+## daily schmidt
+
+schmidt_doy <- schmidt %>% 
+  group_by(doy, year, date) %>%
+  summarise(schmidt.stability = mean(schmidt.stability))
+
+mean$doy <- as.numeric(mean$doy)
+ggplot(mean, aes(x= doy, y = mean, color = factor(year)))+
+  geom_smooth(method = "gam", se = FALSE) +
+  labs(x = "", y = "Schmidt stability")
+
+
+
+
+
