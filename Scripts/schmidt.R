@@ -41,10 +41,30 @@ p1 = ggplot(schmidt_2021, aes(x = datetime, y = schmidt.stability))+
   labs(x = "", y = "Schmidt stability")
 ggsave("Data/export/schmidt_2021.png", p1)
 
-p2 = ggplot(schmidt, aes(x = datetime, y = schmidt.stability))+
+p2 = ggplot(schmidt_2019, aes(x = datetime, y = schmidt.stability))+
   geom_line()+
   labs(x = "", y = "Schmidt stability")
-ggsave("Data/export/schmidt_all_years.png", p2)
+ggsave("Data/export/schmidt_2019.png", p2)
+
+p3 = ggplot(schmidt_2018, aes(x = datetime, y = schmidt.stability))+
+  geom_line()+
+  labs(x = "", y = "Schmidt stability")
+ggsave("Data/export/schmidt_2018.png", p3)
+
+p4 = ggplot(schmidt_2017, aes(x = datetime, y = schmidt.stability))+
+  geom_line()+
+  labs(x = "", y = "Schmidt stability")
+ggsave("Data/export/schmidt_2017.png", p4)
+
+p5 = ggplot(schmidt_2016, aes(x = datetime, y = schmidt.stability))+
+  geom_line()+
+  labs(x = "", y = "Schmidt stability")
+ggsave("Data/export/schmidt_2016.png", p5)
+
+p6 = ggplot(schmidt, aes(x = datetime, y = schmidt.stability))+
+  geom_line()+
+  labs(x = "", y = "Schmidt stability")
+ggsave("Data/export/schmidt_all_years.png", p6)
 
 #thermo depth 
 thermo_depth <- ts.thermo.depth(wtr, Smin = 0.1, na.rm = TRUE)
